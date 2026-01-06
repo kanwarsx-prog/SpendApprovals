@@ -3,7 +3,7 @@
 import { generateObject } from 'ai';
 import { openai } from '@ai-sdk/openai';
 import { z } from 'zod';
-import pdf from 'pdf-parse';
+const pdf = require('pdf-parse');
 
 // Define the schema calls for the LLM
 const startSchema = z.object({
