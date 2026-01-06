@@ -28,15 +28,12 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
         }
 
         // Generate PDF stream
-        const logoPath = path.join(process.cwd(), 'public', 'cwit-logo.svg')
 
         const stream = await renderToStream(
             <ApprovalDocument
                 data={{
-                    logoPath,
                     id: reqData.id,
                     title: reqData.title,
-                    expenseType: (reqData as any).expenseType || "OPEX", // Cast as any because type might not be generated yet
                     detailedDescription: (reqData as any).detailedDescription,
                     amount: reqData.amount,
                     currency: reqData.currency,
