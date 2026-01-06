@@ -58,7 +58,7 @@ export function RequestWizard() {
     const router = useRouter()
 
     const methods = useForm<FormData>({
-        resolver: zodResolver(formSchema),
+        resolver: zodResolver(formSchema) as any,
         mode: "onBlur",
         defaultValues: {
             currency: "GBP",
