@@ -48,6 +48,11 @@ export default async function AdminPage() {
                                     View Matrix
                                 </Button>
                             </Link>
+                            <Link href="/admin/rules/import">
+                                <Button variant="secondary" size="sm" className="bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200">
+                                    Import PDF
+                                </Button>
+                            </Link>
                             <Link href="/admin/rules/new">
                                 <Button size="sm">
                                     <Plus className="mr-2 h-4 w-4" /> Add Rule
