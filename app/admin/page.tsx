@@ -42,7 +42,7 @@ export default async function AdminPage() {
                             <Shield className="mr-2 h-5 w-5" />
                             Active Approval Rules
                         </CardTitle>
-                        <div className="flex gap-2">
+                        <div className="flex flex-wrap gap-2 justify-end">
                             <Link href="/admin/matrix">
                                 <Button variant="outline" size="sm">
                                     View Matrix
