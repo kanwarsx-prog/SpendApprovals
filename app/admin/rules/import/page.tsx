@@ -38,10 +38,25 @@ export default function ImportPolicyPage() {
     }
 
     async function handleSave() {
-        // Here we would effectively save to DB
-        // For MVP, just redirect
-        alert("Simulating Save: " + rules.length + " rules would be added.")
-        router.push('/admin')
+        if (rules.length === 0) return
+
+        setIsLoading(true)
+        try {
+            const { saveImportedRules } = await import('@/app/actions/save-rules')
+            const result = await saveImportedRules(rules)
+
+            if (result.success) {
+                // Success feedback
+                router.push('/admin')
+                router.refresh()
+            } else {
+                setError(result.error || "Failed to save rules")
+            }
+        } catch (e) {
+            setError("Network error occurred")
+        } finally {
+            setIsLoading(false)
+        }
     }
 
     return (
