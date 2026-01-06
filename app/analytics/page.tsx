@@ -159,8 +159,8 @@ export default async function AnalyticsPage() {
 
                 {/* Main Charts Row */}
                 <div className="grid gap-4 md:grid-cols-2">
-                    {/* Trend Chart (Full Width on mobile, half on desktop) */}
-                    <Card className="col-span-1 md:col-span-2">
+                    {/* Trend Chart */}
+                    <Card className="col-span-1">
                         <CardHeader>
                             <CardTitle>Spend Velocity</CardTitle>
                             <CardDescription>Requested volume over time (split by CAPEX/OPEX)</CardDescription>
@@ -180,11 +180,6 @@ export default async function AnalyticsPage() {
                             <CategoryBarChart data={categoryData} />
                         </CardContent>
                     </Card>
-
-                    {/* Placeholder for balance, or could be another metric */}
-                    <Card className="col-span-1 flex flex-col justify-center items-center bg-stone-50/50 border-dashed">
-                        <p className="text-stone-400 text-sm">Select a category to drill down (Coming Soon)</p>
-                    </Card>
                 </div>
 
                 {/* Exposure Analysis Section */}
@@ -194,7 +189,7 @@ export default async function AnalyticsPage() {
                         {/* CAPEX Exposure */}
                         <Card className="border-l-4 border-l-[#C02D76]">
                             <CardHeader className="pb-2">
-                                <CardTitle className="text-base">CAPEX Bottlenecks</CardTitle>
+                                <CardTitle className="text-base">CAPEX Pending Approvals</CardTitle>
                                 <CardDescription>Pending CAPEX value by current approver</CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -211,7 +206,7 @@ export default async function AnalyticsPage() {
                         {/* OPEX Exposure */}
                         <Card className="border-l-4 border-l-[#22C55E]">
                             <CardHeader className="pb-2">
-                                <CardTitle className="text-base">OPEX Bottlenecks</CardTitle>
+                                <CardTitle className="text-base">OPEX Pending Approvals</CardTitle>
                                 <CardDescription>Pending OPEX value by current approver</CardDescription>
                             </CardHeader>
                             <CardContent>
