@@ -1,0 +1,76 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  role      String   @default("REQUESTER") // REQUESTER, APPROVER, ADMIN
+  requests  Request[]
+  approvals ApprovalStep[]
+}
+
+model Request {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  amount      Float
+  currency    String
+  expenseType String   @default("OPEX") // CAPEX, OPEX
+  category    String
+  supplier    String?
+  detailedDescription String? // Rich text (multiline) description
+  status      String   @default("DRAFT") // DRAFT, SUBMITTED, IN_APPROVAL, APPROVED, REJECTED
+  
+  requesterId String
+  requester   User     @relation(fields: [requesterId], references: [id])
+  
+  approvalSteps ApprovalStep[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ApprovalStep {
+  id           String    @id @default(cuid())
+  requestId    String
+  request      Request   @relation(fields: [requestId], references: [id])
+  
+  approverId   String?
+  approver     User?     @relation(fields: [approverId], references: [id])
+  
+  roleName     String    // e.g. "Line Manager", "Finance"
+  status       String    @default("PENDING") // PENDING, APPROVED, REJECTED
+  comment      String?
+  decisionDate DateTime?
+  
+  order        Int       @default(0)
+}
+
+model ApprovalRule {
+  id          String @id @default(cuid())
+  minAmount   Float  @default(0)
+  maxAmount   Float? 
+  category    String?
+  expenseType String   @default("OPEX") // CAPEX, OPEX, or "Any"
+  
+  requiredRole String // e.g. "Line Manager", "Finance Director"
+  stepOrder    Int    @default(0)
+  isActive     Boolean @default(true)
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userEmail String
+  title     String
+  message   String
+  type      String   @default("INFO") // INFO, SUCCESS, WARNING, ACTION
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+

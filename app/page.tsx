@@ -1,65 +1,164 @@
-import Image from "next/image";
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import Link from "next/link"
+import { Plus, FileText, Clock, AlertCircle, CheckCircle2 } from "lucide-react"
+import { PrismaClient } from "@prisma/client"
+import { Header } from "@/components/header"
 
-export default function Home() {
+// Instantiate Prisma
+const prisma = new PrismaClient()
+
+export const dynamic = 'force-dynamic'
+
+interface HomeProps {
+  searchParams: {
+    submitted?: string;
+  };
+}
+
+export default async function Home({ searchParams }: HomeProps) {
+  // 1. Fetch data
+  const requests = await prisma.request.findMany({
+    orderBy: { createdAt: 'desc' },
+    include: { requester: true, approvalSteps: true },
+    take: 10
+  })
+
+  // Simulated counts
+  const awaitingApprovalCount = requests.filter(r => r.status === 'SUBMITTED').length
+  const myRequestsCount = requests.length // Simulating "My Requests" as total for now
+
+  const showSuccessBanner = searchParams?.submitted === 'true';
+
+  const getFriendlyStatus = (status: string) => {
+    switch (status) {
+      case 'SUBMITTED': return 'In approval';
+      case 'APPROVED': return 'Approved';
+      case 'REJECTED': return 'Returned for changes';
+      case 'DRAFT': return 'Draft';
+      default: return status;
+    }
+  }
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'SUBMITTED': return 'text-amber-600 bg-amber-50';
+      case 'APPROVED': return 'text-emerald-600 bg-emerald-50';
+      case 'REJECTED': return 'text-rose-600 bg-rose-50';
+      default: return 'text-stone-600 bg-stone-50';
+    }
+  }
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main className="min-h-screen bg-stone-50 p-8">
+      <div className="mx-auto max-w-5xl space-y-8">
+        <Header />
+
+        {/* User Reassurance Messaging */}
+        {showSuccessBanner && (
+          <div className="rounded-md bg-emerald-50 p-4 border border-emerald-200 flex items-start">
+            <CheckCircle2 className="h-5 w-5 text-emerald-600 mt-0.5 mr-3 flex-shrink-0" />
+            <div>
+              <h3 className="text-sm font-medium text-emerald-800">Request Submitted</h3>
+              <p className="text-sm text-emerald-700 mt-1">
+                Your request has been submitted. The system is collecting approvals automatically.
+              </p>
+            </div>
+          </div>
+        )}
+
+        <div className="flex justify-between items-center mb-6">
+          {/* Space for potential future header elements or just layout balance */}
+          <div></div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        {/* Primary Action is always visible via the Header or here. Changes.md asks for prominent button. */}
+        <div className="flex justify-end mb-8">
+          <Link href="/new">
+            <Button size="lg" className="shadow-lg bg-[#C02D76] hover:bg-[#a62666] text-white">
+              <Plus className="mr-2 h-4 w-4" />
+              New Spend Request
+            </Button>
+          </Link>
         </div>
-      </main>
-    </div>
-  );
+
+
+        <div className="grid gap-6 md:grid-cols-2">
+          {/* Summary Card 1: Awaiting My Approval */}
+          <Card className="cursor-pointer hover:shadow-md transition-shadow relative overflow-hidden group">
+            <div className="absolute top-0 left-0 w-1 h-full bg-[#C02D76]" />
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-stone-500">Approvals waiting for you</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-baseline space-x-2">
+                <div className="text-4xl font-bold text-stone-900">
+                  {awaitingApprovalCount > 0 ? awaitingApprovalCount : 0}
+                </div>
+                {awaitingApprovalCount === 0 && (
+                  <span className="text-sm text-stone-400 font-medium">No approvals waiting</span>
+                )}
+              </div>
+              <p className="text-xs text-stone-400 mt-2">Awaiting My Approval</p>
+            </CardContent>
+          </Card>
+
+          {/* Summary Card 2: My Requests */}
+          <Card className="cursor-pointer hover:shadow-md transition-shadow relative overflow-hidden group">
+            <div className="absolute top-0 left-0 w-1 h-full bg-[#34394D]" />
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-stone-500">Requests I have submitted</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-baseline space-x-2">
+                <div className="text-4xl font-bold text-stone-900">{myRequestsCount}</div>
+              </div>
+              <p className="text-xs text-stone-400 mt-2">My Requests</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        <section className="bg-white rounded-xl shadow-sm border border-stone-200 overflow-hidden">
+          <div className="p-6 border-b border-stone-100">
+            <h2 className="text-lg font-semibold text-stone-900">Recent Activity</h2>
+          </div>
+
+          {requests.length === 0 ? (
+            <div className="p-8 text-center text-stone-400 text-sm">
+              No recent activity
+            </div>
+          ) : (
+            <div className="divide-y divide-stone-100">
+              {requests.map((req) => (
+                <Link href={`/requests/${req.id}`} key={req.id} className="block hover:bg-stone-50 transition-colors">
+                  <div className="flex items-center justify-between p-4 sm:p-6">
+                    <div className="flex items-center space-x-4">
+                      <div className="p-2 bg-stone-100 rounded-lg text-stone-500">
+                        <FileText className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <p className="font-semibold text-stone-900">{req.title}</p>
+                        <p className="text-sm text-stone-500">
+                          {req.requester?.name || 'Unknown User'} • {req.category}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="text-right">
+                      <div className="font-bold text-stone-900">
+                        {req.currency} {req.amount.toLocaleString()}
+                      </div>
+                      <div className={`text-xs font-medium px-2 py-1 rounded-full inline-block mt-1 ${getStatusColor(req.status)}`}>
+                        {getFriendlyStatus(req.status)}
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+        </section>
+      </div>
+    </main>
+  )
 }
