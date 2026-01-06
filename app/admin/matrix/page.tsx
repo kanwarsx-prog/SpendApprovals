@@ -38,12 +38,6 @@ export default async function MatrixPage() {
                         <h2 className="text-2xl font-bold text-stone-900">Delegation of Authority Matrix</h2>
                         <p className="text-stone-500">Visual overview of approval thresholds and responsibilities</p>
                     </div>
-                    <Link href="/admin">
-                        <Button variant="outline" size="sm">
-                            <Settings className="mr-2 h-4 w-4" />
-                            Manage Rules
-                        </Button>
-                    </Link>
                 </div>
 
                 <div className="grid gap-8">
