@@ -75,19 +75,19 @@ export default async function RequestPage({ params }: { params: Promise<{ id: st
             <div className="mx-auto max-w-6xl space-y-8">
                 <Header />
                 {/* Header */}
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div className="flex items-center space-x-4">
                         <Link href="/">
                             <Button variant="ghost" size="sm">
                                 <ChevronLeft className="mr-2 h-4 w-4" />
-                                Dashboard
+                                <span className="hidden sm:inline">Dashboard</span>
                             </Button>
                         </Link>
-                        <h1 className="text-2xl font-bold tracking-tight text-stone-900">{request.title}</h1>
+                        <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-stone-900">{request.title}</h1>
                     </div>
-                    <div className="flex gap-2">
-                        <Link href={`/api/requests/${request.id}/pdf`} target="_blank">
-                            <Button variant="outline">
+                    <div className="flex gap-2 w-full sm:w-auto">
+                        <Link href={`/api/requests/${request.id}/pdf`} target="_blank" className="w-full sm:w-auto">
+                            <Button variant="outline" className="w-full sm:w-auto">
                                 <Download className="mr-2 h-4 w-4" />
                                 Download PDF
                             </Button>

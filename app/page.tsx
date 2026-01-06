@@ -131,20 +131,20 @@ export default async function Home({ searchParams }: HomeProps) {
             <div className="divide-y divide-stone-100">
               {requests.map((req) => (
                 <Link href={`/requests/${req.id}`} key={req.id} className="block hover:bg-stone-50 transition-colors">
-                  <div className="flex items-center justify-between p-4 sm:p-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 sm:p-6 gap-2">
                     <div className="flex items-center space-x-4">
-                      <div className="p-2 bg-stone-100 rounded-lg text-stone-500">
+                      <div className="p-2 bg-stone-100 rounded-lg text-stone-500 shrink-0">
                         <FileText className="h-5 w-5" />
                       </div>
-                      <div>
-                        <p className="font-semibold text-stone-900">{req.title}</p>
-                        <p className="text-sm text-stone-500">
+                      <div className="min-w-0">
+                        <p className="font-semibold text-stone-900 truncate">{req.title}</p>
+                        <p className="text-sm text-stone-500 truncate">
                           {req.requester?.name || 'Unknown User'} • {req.category}
                         </p>
                       </div>
                     </div>
 
-                    <div className="text-right">
+                    <div className="text-left sm:text-right pl-[52px] sm:pl-0">
                       <div className="font-bold text-stone-900">
                         {req.currency} {req.amount.toLocaleString()}
                       </div>

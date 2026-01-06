@@ -13,11 +13,11 @@ export function Header() {
         <header className="flex items-center justify-between mb-8">
             <div className="flex items-center gap-4">
                 <Link href="/">
-                    <img src="/cwit-logo.svg" alt="CWIT Logo" className="h-12 w-auto cursor-pointer" />
+                    <img src="/cwit-logo.svg" alt="CWIT Logo" className="h-10 w-auto sm:h-12 cursor-pointer" />
                 </Link>
-                <div>
-                    <h1 className="text-2xl font-bold tracking-tight text-stone-900">Spend Approvals</h1>
-                    <p className="text-xs text-stone-500 font-medium">COLOMBO WEST INTERNATIONAL TERMINAL</p>
+                <div className="hidden sm:block">
+                    <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-stone-900">Spend Approvals</h1>
+                    <p className="text-[10px] sm:text-xs text-stone-500 font-medium">COLOMBO WEST INTERNATIONAL TERMINAL</p>
                 </div>
             </div>
             <nav className="flex items-center gap-4">

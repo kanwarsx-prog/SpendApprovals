@@ -114,16 +114,16 @@ export function RequestWizard() {
             {/* ... steps UI ... */}
 
             {/* Progress System - kept same */}
-            <div className="mb-8 flex justify-between">
+            <div className="mb-8 flex justify-between px-2 sm:px-0">
                 {steps.map((step) => (
                     <div key={step.id} className="flex flex-col items-center">
-                        <div className={`flex h-8 w-8 items-center justify-center rounded-full border-2 text-sm font-bold ${currentStep >= step.id
+                        <div className={`flex h-8 w-8 items-center justify-center rounded-full border-2 text-sm font-bold transition-all ${currentStep >= step.id
                             ? "border-stone-900 bg-stone-900 text-stone-50"
                             : "border-stone-200 text-stone-400"
                             }`}>
                             {currentStep > step.id ? <Check className="h-4 w-4" /> : step.id}
                         </div>
-                        <span className="mt-2 text-xs font-medium text-stone-500">{step.title}</span>
+                        <span className="mt-2 text-[10px] sm:text-xs font-medium text-stone-500">{step.title}</span>
                     </div>
                 ))}
             </div>
@@ -256,12 +256,12 @@ export function RequestWizard() {
                             {/* STEP 4 */}
                             {currentStep === 4 && (
                                 <div className="space-y-4 rounded-lg border bg-stone-50 p-4 text-sm">
-                                    <div className="grid grid-cols-3 gap-2">
+                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                                         <span className="font-semibold text-stone-500">Title:</span>
-                                        <span className="col-span-2">{data.title}</span>
+                                        <span className="col-span-1 sm:col-span-2">{data.title}</span>
 
                                         <span className="font-semibold text-stone-500">Category:</span>
-                                        <span className="col-span-2">
+                                        <span className="col-span-1 sm:col-span-2">
                                             <span className="inline-flex items-center rounded-md bg-stone-100 px-2 py-1 text-xs font-medium text-stone-600 ring-1 ring-inset ring-stone-500/10 mr-2">
                                                 {data.expenseType}
                                             </span>
@@ -269,16 +269,16 @@ export function RequestWizard() {
                                         </span>
 
                                         <span className="font-semibold text-stone-500">Amount:</span>
-                                        <span className="col-span-2">{data.currency} {data.amount}</span>
+                                        <span className="col-span-1 sm:col-span-2">{data.currency} {data.amount}</span>
 
                                         <span className="font-semibold text-stone-500">Supplier:</span>
-                                        <span className="col-span-2">{data.supplier}</span>
+                                        <span className="col-span-1 sm:col-span-2">{data.supplier}</span>
 
                                         <span className="font-semibold text-stone-500">Justification:</span>
-                                        <span className="col-span-2 break-words">{data.justification}</span>
+                                        <span className="col-span-1 sm:col-span-2 break-words">{data.justification}</span>
 
                                         <span className="font-semibold text-stone-500">Detailed Description:</span>
-                                        <span className="col-span-2 break-words whitespace-pre-wrap">{data.detailedDescription}</span>
+                                        <span className="col-span-1 sm:col-span-2 break-words whitespace-pre-wrap">{data.detailedDescription}</span>
                                     </div>
                                 </div>
                             )}
