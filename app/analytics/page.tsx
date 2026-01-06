@@ -2,7 +2,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { PrismaClient } from "@prisma/client"
 import { CategoryBarChart } from "./_components/CategoryBarChart"
 import { TrendChart } from "./_components/TrendChart"
-import { ArrowLeft, TrendingUp, PoundSterling, FileText, CheckCircle } from "lucide-react"
+import { ExposureChart } from "./_components/ExposureChart"
+import { ArrowLeft, TrendingUp, PoundSterling, FileText, CheckCircle, Clock } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 
@@ -11,14 +12,21 @@ const prisma = new PrismaClient()
 export const dynamic = 'force-dynamic'
 
 export default async function AnalyticsPage() {
-    // 1. Fetch Data
+    // 1. Fetch Data with Approval Steps for Exposure Analysis
     const requests = await prisma.request.findMany({
         select: {
             id: true,
             amount: true,
             category: true,
             status: true,
-            createdAt: true
+            createdAt: true,
+            expenseType: true,
+            approvalSteps: {
+                where: { status: 'PENDING' },
+                orderBy: { order: 'asc' },
+                take: 1, // Get the current active step
+                select: { roleName: true }
+            }
         },
         orderBy: { createdAt: 'asc' }
     })
@@ -42,28 +50,51 @@ export default async function AnalyticsPage() {
     const categoryData = Array.from(categoryMap.entries())
         .map(([category, amount]) => ({ category, amount }))
         .sort((a, b) => b.amount - a.amount)
-        .slice(0, 6) // Top 6
+        .slice(0, 6)
 
-    // 4. Aggregate for Trend Chart (Monthly)
-    const trendMap = new Map<string, number>()
+    // 4. Aggregate for Split Trend Chart (Monthly)
+    const trendMap = new Map<string, { total: number, capex: number, opex: number }>()
 
-    // Seed last 6 months to ensure continuity
+    // Seed last 6 months
     for (let i = 5; i >= 0; i--) {
         const d = new Date()
         d.setMonth(d.getMonth() - i)
-        const key = d.toLocaleString('default', { month: 'short' })
-        trendMap.set(key, 0)
+        // Format: "Jan 2024" to ensure uniqueness across years
+        const key = d.toLocaleString('default', { month: 'short', year: '2-digit' })
+        trendMap.set(key, { total: 0, capex: 0, opex: 0 })
     }
 
     requests.forEach(r => {
-        const key = r.createdAt.toLocaleString('default', { month: 'short' })
-        // Only count if it's within our seeded range (roughly)
+        const key = r.createdAt.toLocaleString('default', { month: 'short', year: '2-digit' })
         if (trendMap.has(key)) {
-            trendMap.set(key, (trendMap.get(key) || 0) + r.amount)
+            const current = trendMap.get(key)!
+            current.total += r.amount
+            if (r.expenseType === 'CAPEX') current.capex += r.amount
+            if (r.expenseType === 'OPEX') current.opex += r.amount
         }
     })
-    const trendData = Array.from(trendMap.entries()).map(([date, amount]) => ({ date, amount }))
+    const trendData = Array.from(trendMap.entries()).map(([date, values]) => ({ date, ...values }))
 
+    // 5. Aggregate for Exposure Charts (Pending only)
+    const capexExposureMap = new Map<string, number>()
+    const opexExposureMap = new Map<string, number>()
+
+    requests
+        .filter(r => ['SUBMITTED', 'IN_APPROVAL'].includes(r.status) && r.approvalSteps.length > 0)
+        .forEach(r => {
+            const currentRole = r.approvalSteps[0].roleName
+            const map = r.expenseType === 'CAPEX' ? capexExposureMap : opexExposureMap
+            const currentVal = map.get(currentRole) || 0
+            map.set(currentRole, currentVal + r.amount)
+        })
+
+    const toChartData = (map: Map<string, number>) =>
+        Array.from(map.entries())
+            .map(([name, value]) => ({ name, value }))
+            .sort((a, b) => b.value - a.value)
+
+    const capexExposureData = toChartData(capexExposureMap)
+    const opexExposureData = toChartData(opexExposureMap)
 
     return (
         <main className="min-h-screen bg-stone-50 p-8">
@@ -126,13 +157,13 @@ export default async function AnalyticsPage() {
                     </Card>
                 </div>
 
-                {/* Charts */}
+                {/* Main Charts Row */}
                 <div className="grid gap-4 md:grid-cols-2">
-                    {/* Trend Chart */}
-                    <Card className="col-span-1">
+                    {/* Trend Chart (Full Width on mobile, half on desktop) */}
+                    <Card className="col-span-1 md:col-span-2">
                         <CardHeader>
                             <CardTitle>Spend Velocity</CardTitle>
-                            <CardDescription>Total requested volume over the last 6 months</CardDescription>
+                            <CardDescription>Requested volume over time (split by CAPEX/OPEX)</CardDescription>
                         </CardHeader>
                         <CardContent className="pl-0">
                             <TrendChart data={trendData} />
@@ -142,13 +173,58 @@ export default async function AnalyticsPage() {
                     {/* Category Chart */}
                     <Card className="col-span-1">
                         <CardHeader>
-                            <CardTitle>Spend by Category</CardTitle>
-                            <CardDescription>Top spending categories by requested volume</CardDescription>
+                            <CardTitle>Top Spend Categories</CardTitle>
+                            <CardDescription>Highest volume categories</CardDescription>
                         </CardHeader>
                         <CardContent>
                             <CategoryBarChart data={categoryData} />
                         </CardContent>
                     </Card>
+
+                    {/* Placeholder for balance, or could be another metric */}
+                    <Card className="col-span-1 flex flex-col justify-center items-center bg-stone-50/50 border-dashed">
+                        <p className="text-stone-400 text-sm">Select a category to drill down (Coming Soon)</p>
+                    </Card>
+                </div>
+
+                {/* Exposure Analysis Section */}
+                <div>
+                    <h2 className="text-xl font-bold text-stone-900 mb-4 mt-4">Approver Exposure Analysis</h2>
+                    <div className="grid gap-4 md:grid-cols-2">
+                        {/* CAPEX Exposure */}
+                        <Card className="border-l-4 border-l-[#C02D76]">
+                            <CardHeader className="pb-2">
+                                <CardTitle className="text-base">CAPEX Bottlenecks</CardTitle>
+                                <CardDescription>Pending CAPEX value by current approver</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                {capexExposureData.length > 0 ? (
+                                    <ExposureChart data={capexExposureData} color="#C02D76" />
+                                ) : (
+                                    <div className="h-[200px] flex items-center justify-center text-stone-400 text-sm">
+                                        No pending CAPEX requests
+                                    </div>
+                                )}
+                            </CardContent>
+                        </Card>
+
+                        {/* OPEX Exposure */}
+                        <Card className="border-l-4 border-l-[#22C55E]">
+                            <CardHeader className="pb-2">
+                                <CardTitle className="text-base">OPEX Bottlenecks</CardTitle>
+                                <CardDescription>Pending OPEX value by current approver</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                {opexExposureData.length > 0 ? (
+                                    <ExposureChart data={opexExposureData} color="#22C55E" />
+                                ) : (
+                                    <div className="h-[200px] flex items-center justify-center text-stone-400 text-sm">
+                                        No pending OPEX requests
+                                    </div>
+                                )}
+                            </CardContent>
+                        </Card>
+                    </div>
                 </div>
             </div>
         </main>
