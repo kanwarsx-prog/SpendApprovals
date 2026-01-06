@@ -15,8 +15,8 @@ export function Header() {
                 <Link href="/">
                     <img src="/cwit-logo.svg" alt="CWIT Logo" className="h-10 w-auto sm:h-12 cursor-pointer" />
                 </Link>
-                <div className="hidden sm:block">
-                    <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-stone-900">Spend Approvals</h1>
+                <div>
+                    <h1 className="text-lg sm:text-2xl font-bold tracking-tight text-stone-900 leading-tight">Spend Approvals</h1>
                     <p className="text-[10px] sm:text-xs text-stone-500 font-medium">COLOMBO WEST INTERNATIONAL TERMINAL</p>
                 </div>
             </div>
