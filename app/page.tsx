@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import Link from "next/link"
-import { Plus, FileText, Clock, AlertCircle, CheckCircle2 } from "lucide-react"
+import { Plus, FileText, Clock, AlertCircle, CheckCircle2, Shield } from "lucide-react"
 import { PrismaClient } from "@prisma/client"
 import { Header } from "@/components/header"
 
