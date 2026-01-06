@@ -3,7 +3,7 @@
 import { generateObject } from 'ai';
 import { openai } from '@ai-sdk/openai';
 import { z } from 'zod';
-const pdf = require('pdf-parse');
+import PDFParser from 'pdf2json';
 
 // Define the schema calls for the LLM
 const startSchema = z.object({
@@ -24,11 +24,23 @@ export async function parsePolicyDocument(formData: FormData) {
     }
 
     try {
-        // 1. Extract Text from PDF
+        // 1. Extract Text from PDF using pdf2json (Pure Node)
         const arrayBuffer = await file.arrayBuffer();
         const buffer = Buffer.from(arrayBuffer);
-        const data = await pdf(buffer);
-        const textContext = data.text.slice(0, 20000); // Limit context window
+
+        const textContext = await new Promise<string>((resolve, reject) => {
+            const pdfParser = new PDFParser(null, 1); // 1 = Raw Text mode
+
+            pdfParser.on("pdfParser_dataError", (errData: any) => reject(errData.parserError));
+            pdfParser.on("pdfParser_dataReady", (pdfData: any) => {
+                // "rawText" is often URL encoded, pdf2json's getRawTextContent() is safer
+                resolve(pdfParser.getRawTextContent());
+            });
+
+            pdfParser.parseBuffer(buffer);
+        });
+
+        const truncatedText = textContext.slice(0, 20000); // Limit context window
 
         // 2. Call AI (Mock if no key, or Real if key exists)
         const apiKey = process.env.OPENAI_API_KEY;
@@ -56,7 +68,7 @@ export async function parsePolicyDocument(formData: FormData) {
         Extract all approval threshold rules.
         
         Text:
-        ${textContext}
+        ${truncatedText}
       `,
         });
 
@@ -64,6 +76,6 @@ export async function parsePolicyDocument(formData: FormData) {
 
     } catch (error) {
         console.error('Parse Error:', error);
-        return { success: false, error: 'Failed to parse document.' };
+        return { success: false, error: 'Failed to parse document. The file might be corrupted or encrypted.' };
     }
 }
