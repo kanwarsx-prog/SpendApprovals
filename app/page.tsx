@@ -69,7 +69,17 @@ export default async function Home({ searchParams }: HomeProps) {
 
         <div className="flex justify-between items-center mb-6">
           {/* Space for potential future header elements or just layout balance */}
-          <div></div>
+          <div className="flex items-center gap-4">
+            <Link href="/analytics" className="text-sm font-medium text-stone-500 hover:text-stone-900 transition-colors">
+              Insights
+            </Link>
+            <Link href="/admin">
+              <Button variant="ghost" size="sm" className="text-stone-500">
+                <Shield className="mr-2 h-4 w-4" />
+                Admin
+              </Button>
+            </Link>
+          </div>
         </div>
 
         {/* Primary Action is always visible via the Header or here. Changes.md asks for prominent button. */}
