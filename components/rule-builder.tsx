@@ -58,13 +58,13 @@ export function RuleBuilder() {
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
 
                     <div className="bg-stone-50 p-6 rounded-lg border border-stone-200 text-lg leading-relaxed text-stone-700">
-                        <span className="font-semibold text-stone-500 mr-2">WHEN</span>
+                        <span className="font-semibold text-stone-500 mr-2 block sm:inline mb-2 sm:mb-0">WHEN</span>
 
-                        <div className="inline-block mx-1">
-                            <label className="text-xs font-bold text-stone-400 block">TYPE</label>
+                        <div className="block sm:inline-block mx-1 mb-4 sm:mb-0">
+                            <label className="text-xs font-bold text-stone-400 block mb-1">TYPE</label>
                             <select
                                 {...register("expenseType")}
-                                className="h-10 rounded-md border-stone-300 bg-white px-3 py-1 text-base focus:ring-2 focus:ring-stone-900"
+                                className="w-full sm:w-auto h-10 rounded-md border-stone-300 bg-white px-3 py-1 text-base focus:ring-2 focus:ring-stone-900"
                             >
                                 <option value="Any">Any Type</option>
                                 <option value="OPEX">OPEX</option>
@@ -72,13 +72,13 @@ export function RuleBuilder() {
                             </select>
                         </div>
 
-                        <span className="mx-2">and</span>
+                        <span className="mx-2 hidden sm:inline">and</span>
 
-                        <div className="inline-block mx-1">
-                            <label className="text-xs font-bold text-stone-400 block">CATEGORY IS</label>
+                        <div className="block sm:inline-block mx-1 mb-4 sm:mb-0">
+                            <label className="text-xs font-bold text-stone-400 block mb-1">CATEGORY IS</label>
                             <select
                                 {...register("category")}
-                                className="h-10 rounded-md border-stone-300 bg-white px-3 py-1 text-base focus:ring-2 focus:ring-stone-900"
+                                className="w-full sm:w-auto h-10 rounded-md border-stone-300 bg-white px-3 py-1 text-base focus:ring-2 focus:ring-stone-900"
                             >
                                 <option value="Any">Any Category</option>
                                 <option value="Port Operations">Port Operations</option>
@@ -92,31 +92,31 @@ export function RuleBuilder() {
                             </select>
                         </div>
 
-                        <span className="mx-2">and</span>
+                        <span className="mx-2 hidden sm:inline">and</span>
 
-                        <div className="inline-block mx-1">
-                            <label className="text-xs font-bold text-stone-400 block">AMOUNT &gt;</label>
+                        <div className="block sm:inline-block mx-1 mb-4 sm:mb-0">
+                            <label className="text-xs font-bold text-stone-400 block mb-1">AMOUNT &gt;</label>
                             <div className="relative">
                                 <span className="absolute left-3 top-2 text-stone-500">£</span>
                                 <Input
                                     type="number"
                                     {...register("minAmount")}
-                                    className="pl-6 w-32 inline-block h-10 text-base"
+                                    className="pl-6 w-full sm:w-32 block sm:inline-block h-10 text-base"
                                 />
                             </div>
                         </div>
 
                         <div className="my-6 border-t border-stone-200" />
 
-                        <span className="font-semibold text-stone-500 mr-2">THEN</span>
-                        <span>require approval from</span>
+                        <span className="font-semibold text-stone-500 mr-2 block sm:inline mb-2 sm:mb-0">THEN</span>
+                        <span className="hidden sm:inline">require approval from</span>
 
-                        <div className="inline-block mx-1">
-                            <label className="text-xs font-bold text-stone-400 block">ROLE</label>
+                        <div className="block sm:inline-block mx-1">
+                            <label className="text-xs font-bold text-stone-400 block mb-1">ROLE</label>
                             <Input
                                 placeholder="e.g. Finance Director"
                                 {...register("requiredRole", { required: true })}
-                                className="w-64 inline-block h-10 text-base"
+                                className="w-full sm:w-64 block sm:inline-block h-10 text-base"
                             />
                         </div>
                     </div>
