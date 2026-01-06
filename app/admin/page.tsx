@@ -41,7 +41,6 @@ export default async function AdminPage() {
                         <CardTitle className="flex items-center">
                             <Shield className="mr-2 h-5 w-5" />
                             Active Approval Rules
-                            Active Approval Rules
                         </CardTitle>
                         <div className="flex gap-2">
                             <Link href="/admin/matrix">
