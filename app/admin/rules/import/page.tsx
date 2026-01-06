@@ -1,9 +1,22 @@
-import { Trash2, Save, ArrowLeft, Loader2 } from "lucide-react"
+'use client'
 
-// ... imports remain the same
+import { useState } from 'react'
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { parsePolicyDocument } from '@/app/actions/import-policy'
+import { Badge } from "@/components/ui/badge"
+import { Loader2, ArrowLeft, Save, Trash2 } from "lucide-react"
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 export default function ImportPolicyPage() {
-    // ... logic remains same
+    const [isLoading, setIsLoading] = useState(false)
+    const [rules, setRules] = useState<any[]>([])
+    const [error, setError] = useState('')
+    const [warning, setWarning] = useState('')
+    const router = useRouter()
 
     // Helper to update rule at specific index
     const updateRule = (index: number, field: string, value: any) => {
@@ -16,6 +29,25 @@ export default function ImportPolicyPage() {
     const removeRule = (index: number) => {
         const newRules = rules.filter((_, i) => i !== index)
         setRules(newRules)
+    }
+
+    async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+        event.preventDefault()
+        setIsLoading(true)
+        setError('')
+        setWarning('')
+        setRules([])
+
+        const formData = new FormData(event.currentTarget)
+        const result = await parsePolicyDocument(formData)
+
+        if (result.success) {
+            setRules(result.data || [])
+            if (result.warning) setWarning(result.warning)
+        } else {
+            setError(result.error || 'Unknown error')
+        }
+        setIsLoading(false)
     }
 
     async function handleSave() {
@@ -34,6 +66,7 @@ export default function ImportPolicyPage() {
             const result = await saveImportedRules(cleanedRules)
 
             if (result.success) {
+                // Success feedback
                 router.push('/admin')
                 router.refresh()
             } else {
@@ -48,10 +81,8 @@ export default function ImportPolicyPage() {
 
     return (
         <main className="min-h-screen bg-stone-50 p-8">
-            {/* ... Header and Upload Card remain same ... */}
-
             <div className="mx-auto max-w-4xl space-y-8">
-                {/* ... existing header code ... */}
+                {/* Header */}
                 <div className="flex items-center space-x-4">
                     <Link href="/admin">
                         <Button variant="ghost" size="sm">
@@ -66,8 +97,8 @@ export default function ImportPolicyPage() {
                     <p className="text-stone-500">Upload your PDF document to automatically generate approval rules.</p>
                 </div>
 
+                {/* Upload Card */}
                 <Card>
-                    {/* ... Upload Form ... */}
                     <CardHeader>
                         <CardTitle>Document Upload</CardTitle>
                         <CardDescription>Select a PDF file to analyze</CardDescription>
