@@ -1,40 +1,21 @@
-'use client'
+import { Trash2, Save, ArrowLeft, Loader2 } from "lucide-react"
 
-import { useState } from 'react'
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { parsePolicyDocument } from '@/app/actions/import-policy'
-import { Badge } from "@/components/ui/badge"
-import { Loader2, ArrowLeft, Save } from "lucide-react"
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+// ... imports remain the same
 
 export default function ImportPolicyPage() {
-    const [isLoading, setIsLoading] = useState(false)
-    const [rules, setRules] = useState<any[]>([])
-    const [error, setError] = useState('')
-    const [warning, setWarning] = useState('')
-    const router = useRouter()
+    // ... logic remains same
 
-    async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-        event.preventDefault()
-        setIsLoading(true)
-        setError('')
-        setWarning('')
-        setRules([])
+    // Helper to update rule at specific index
+    const updateRule = (index: number, field: string, value: any) => {
+        const newRules = [...rules]
+        newRules[index] = { ...newRules[index], [field]: value }
+        setRules(newRules)
+    }
 
-        const formData = new FormData(event.currentTarget)
-        const result = await parsePolicyDocument(formData)
-
-        if (result.success) {
-            setRules(result.data || [])
-            if (result.warning) setWarning(result.warning)
-        } else {
-            setError(result.error || 'Unknown error')
-        }
-        setIsLoading(false)
+    // Helper to remove rule
+    const removeRule = (index: number) => {
+        const newRules = rules.filter((_, i) => i !== index)
+        setRules(newRules)
     }
 
     async function handleSave() {
@@ -43,10 +24,16 @@ export default function ImportPolicyPage() {
         setIsLoading(true)
         try {
             const { saveImportedRules } = await import('@/app/actions/save-rules')
-            const result = await saveImportedRules(rules)
+            // Clean up data before saving (ensure numbers are numbers)
+            const cleanedRules = rules.map(r => ({
+                ...r,
+                minAmount: Number(r.minAmount),
+                stepOrder: Number(r.stepOrder)
+            }))
+
+            const result = await saveImportedRules(cleanedRules)
 
             if (result.success) {
-                // Success feedback
                 router.push('/admin')
                 router.refresh()
             } else {
@@ -61,8 +48,10 @@ export default function ImportPolicyPage() {
 
     return (
         <main className="min-h-screen bg-stone-50 p-8">
+            {/* ... Header and Upload Card remain same ... */}
+
             <div className="mx-auto max-w-4xl space-y-8">
-                {/* Header */}
+                {/* ... existing header code ... */}
                 <div className="flex items-center space-x-4">
                     <Link href="/admin">
                         <Button variant="ghost" size="sm">
@@ -77,8 +66,8 @@ export default function ImportPolicyPage() {
                     <p className="text-stone-500">Upload your PDF document to automatically generate approval rules.</p>
                 </div>
 
-                {/* Upload Card */}
                 <Card>
+                    {/* ... Upload Form ... */}
                     <CardHeader>
                         <CardTitle>Document Upload</CardTitle>
                         <CardDescription>Select a PDF file to analyze</CardDescription>
@@ -111,7 +100,7 @@ export default function ImportPolicyPage() {
                         <CardHeader className="flex flex-row items-center justify-between">
                             <div>
                                 <CardTitle>Proposed Rules ({rules.length})</CardTitle>
-                                <CardDescription>Review and verify the extracted logic before saving.</CardDescription>
+                                <CardDescription>Review, edit, or delete the extracted logic before saving.</CardDescription>
                             </div>
                             <Button onClick={handleSave} className="bg-[#C02D76] hover:bg-[#a62666]">
                                 <Save className="mr-2 h-4 w-4" />
@@ -123,23 +112,58 @@ export default function ImportPolicyPage() {
                                 <table className="w-full text-sm text-left">
                                     <thead className="bg-stone-50 text-stone-500 font-medium">
                                         <tr>
-                                            <th className="px-4 py-3">Type</th>
+                                            <th className="px-4 py-3 w-[100px]">Type</th>
                                             <th className="px-4 py-3">Category</th>
-                                            <th className="px-4 py-3">Threshold</th>
+                                            <th className="px-4 py-3 w-[140px]">Min Amount</th>
                                             <th className="px-4 py-3">Required Role</th>
-                                            <th className="px-4 py-3">Step</th>
+                                            <th className="px-4 py-3 w-[50px]">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-stone-100">
                                         {rules.map((rule, idx) => (
                                             <tr key={idx} className="bg-white hover:bg-stone-50/50">
-                                                <td className="px-4 py-3">
-                                                    <Badge variant="outline">{rule.expenseType}</Badge>
+                                                <td className="px-2 py-2">
+                                                    <select
+                                                        value={rule.expenseType}
+                                                        onChange={(e) => updateRule(idx, 'expenseType', e.target.value)}
+                                                        className="h-8 w-full rounded border-stone-200 text-xs"
+                                                    >
+                                                        <option value="OPEX">OPEX</option>
+                                                        <option value="CAPEX">CAPEX</option>
+                                                    </select>
                                                 </td>
-                                                <td className="px-4 py-3 font-medium">{rule.category}</td>
-                                                <td className="px-4 py-3 text-stone-900">&gt; £{rule.minAmount.toLocaleString()}</td>
-                                                <td className="px-4 py-3 text-[#C02D76] font-semibold">{rule.requiredRole}</td>
-                                                <td className="px-4 py-3 text-stone-400">{rule.stepOrder}</td>
+                                                <td className="px-2 py-2">
+                                                    <Input
+                                                        value={rule.category}
+                                                        onChange={(e) => updateRule(idx, 'category', e.target.value)}
+                                                        className="h-8 text-xs"
+                                                    />
+                                                </td>
+                                                <td className="px-2 py-2">
+                                                    <Input
+                                                        type="number"
+                                                        value={rule.minAmount}
+                                                        onChange={(e) => updateRule(idx, 'minAmount', e.target.value)}
+                                                        className="h-8 text-xs"
+                                                    />
+                                                </td>
+                                                <td className="px-2 py-2">
+                                                    <Input
+                                                        value={rule.requiredRole}
+                                                        onChange={(e) => updateRule(idx, 'requiredRole', e.target.value)}
+                                                        className="h-8 text-xs font-medium text-[#C02D76]"
+                                                    />
+                                                </td>
+                                                <td className="px-2 py-2 text-center">
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        className="h-8 w-8 text-stone-400 hover:text-red-500"
+                                                        onClick={() => removeRule(idx)}
+                                                    >
+                                                        <Trash2 className="h-4 w-4" />
+                                                    </Button>
+                                                </td>
                                             </tr>
                                         ))}
                                     </tbody>
