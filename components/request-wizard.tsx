@@ -17,7 +17,7 @@ const formSchema = z.object({
     title: z.string().min(5, "Title must be at least 5 characters"),
     expenseType: z.enum(["OPEX", "CAPEX"]),
     category: z.string().min(1, "Please select a category"),
-    amount: z.coerce.number().min(1, "Amount must be greater than 0"),
+    amount: z.coerce.number().min(0.01, "Amount must be greater than 0"),
     currency: z.string().default("GBP"),
     supplier: z.string().min(1, "Supplier name is required"),
     justification: z.string().min(20, "Please provide a detailed justification"),
