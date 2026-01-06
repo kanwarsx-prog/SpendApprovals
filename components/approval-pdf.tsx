@@ -72,7 +72,7 @@ interface ApprovalPdfProps {
         logoPath: string
         id: string
         title: string
-        description: string
+        // description: string - Removed as we use justification
         detailedDescription?: string | null
         expenseType?: string
         amount: number
