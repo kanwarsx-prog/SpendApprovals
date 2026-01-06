@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import Link from "next/link"
-import { Plus, FileText, Clock, AlertCircle, CheckCircle2, Shield } from "lucide-react"
+import { Plus, FileText, Clock, AlertCircle, CheckCircle2, Shield, BarChart3 } from "lucide-react"
 import { PrismaClient } from "@prisma/client"
 import { Header } from "@/components/header"
 
@@ -70,8 +70,11 @@ export default async function Home({ searchParams }: HomeProps) {
         <div className="flex justify-between items-center mb-6">
           {/* Space for potential future header elements or just layout balance */}
           <div className="flex items-center gap-4">
-            <Link href="/analytics" className="text-sm font-medium text-stone-500 hover:text-stone-900 transition-colors">
-              Insights
+            <Link href="/analytics">
+              <Button variant="ghost" size="sm" className="text-stone-500">
+                <BarChart3 className="mr-2 h-4 w-4" />
+                Insights
+              </Button>
             </Link>
             <Link href="/admin">
               <Button variant="ghost" size="sm" className="text-stone-500">
