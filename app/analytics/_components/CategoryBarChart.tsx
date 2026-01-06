@@ -20,7 +20,7 @@ export function CategoryBarChart({ data }: { data: any[] }) {
                     <Tooltip
                         cursor={{ fill: '#f5f5f4' }}
                         contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                        formatter={(value: number) => [`£${value.toLocaleString()}`, 'Total Spend']}
+                        formatter={(value: any) => [`£${Number(value).toLocaleString()}`, 'Total Spend']}
                     />
                     <Bar dataKey="amount" radius={[0, 4, 4, 0]} barSize={30}>
                         {data.map((entry, index) => (

@@ -28,7 +28,7 @@ export function TrendChart({ data }: { data: any[] }) {
                     />
                     <Tooltip
                         contentStyle={{ borderRadius: '8px', border: '1px solid #e7e5e4' }}
-                        formatter={(value: number) => [`£${value.toLocaleString()}`, 'Requested']}
+                        formatter={(value: any) => [`£${Number(value).toLocaleString()}`, 'Requested']}
                     />
                     <Area
                         type="monotone"
