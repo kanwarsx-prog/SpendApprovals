@@ -29,7 +29,7 @@ export async function parsePolicyDocument(formData: FormData) {
         const buffer = Buffer.from(arrayBuffer);
 
         const textContext = await new Promise<string>((resolve, reject) => {
-            const pdfParser = new PDFParser(null, 1); // 1 = Raw Text mode
+            const pdfParser = new PDFParser(null, true); // true = Raw Text mode
 
             pdfParser.on("pdfParser_dataError", (errData: any) => reject(errData.parserError));
             pdfParser.on("pdfParser_dataReady", (pdfData: any) => {
