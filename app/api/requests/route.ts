@@ -20,6 +20,7 @@ export async function POST(request: Request) {
                 amount: body.amount,
                 currency: body.currency,
                 expenseType: body.expenseType,
+                isBudgeted: body.isBudgeted,
                 detailedDescription: body.detailedDescription,
                 category: body.category,
                 supplier: body.supplier,

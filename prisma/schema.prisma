@@ -27,6 +27,7 @@ model Request {
   supplier    String?
   detailedDescription String? // Rich text (multiline) description
   status      String   @default("DRAFT") // DRAFT, SUBMITTED, IN_APPROVAL, APPROVED, REJECTED
+  isBudgeted  Boolean  @default(false)
   
   requesterId String
   requester   User     @relation(fields: [requesterId], references: [id])

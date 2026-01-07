@@ -10,7 +10,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Check, ChevronRight, ChevronLeft } from "lucide-react"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { HelpCircle } from "lucide-react"
 
 // Define validation schema for the wizard
 const formSchema = z.object({
@@ -19,6 +20,7 @@ const formSchema = z.object({
     category: z.string().min(1, "Please select a category"),
     amount: z.coerce.number().min(0.01, "Amount must be greater than 0"),
     currency: z.string().default("GBP"),
+    isBudgeted: z.boolean().default(false),
     supplier: z.string().min(1, "Supplier name is required"),
     justification: z.string().min(20, "Please provide a detailed justification"),
     detailedDescription: z.string().min(20, "Please provide a detailed description"),
@@ -149,13 +151,37 @@ export function RequestWizard() {
                             {currentStep === 1 && (
                                 <div className="space-y-4">
                                     <div className="space-y-2">
-                                        <Label htmlFor="title">Request Title</Label>
+                                        <Label htmlFor="title" className="flex items-center gap-2">
+                                            Request Title
+                                            <TooltipProvider>
+                                                <Tooltip>
+                                                    <TooltipTrigger asChild>
+                                                        <HelpCircle className="h-4 w-4 text-stone-400 cursor-help" />
+                                                    </TooltipTrigger>
+                                                    <TooltipContent>
+                                                        <p>A short, descriptive name for this purchase request.</p>
+                                                    </TooltipContent>
+                                                </Tooltip>
+                                            </TooltipProvider>
+                                        </Label>
                                         <Input id="title" placeholder="e.g. Q3 Marketing Campaign Usage" {...register("title")} />
                                         {errors.title && <p className="text-sm text-red-500">{errors.title.message}</p>}
                                     </div>
 
                                     <div className="space-y-2">
-                                        <Label>Expense Type</Label>
+                                        <Label className="flex items-center gap-2">
+                                            Expense Type
+                                            <TooltipProvider>
+                                                <Tooltip>
+                                                    <TooltipTrigger asChild>
+                                                        <HelpCircle className="h-4 w-4 text-stone-400 cursor-help" />
+                                                    </TooltipTrigger>
+                                                    <TooltipContent>
+                                                        <p>OPEX: Day-to-day running costs. CAPEX: Long-term assets.</p>
+                                                    </TooltipContent>
+                                                </Tooltip>
+                                            </TooltipProvider>
+                                        </Label>
                                         <div className="flex gap-4">
                                             <div className="flex items-center space-x-2">
                                                 <input
@@ -165,7 +191,7 @@ export function RequestWizard() {
                                                     {...register("expenseType")}
                                                     className="h-4 w-4 border-stone-300 text-stone-900 focus:ring-stone-900"
                                                 />
-                                                <Label htmlFor="opex" className="font-normal">OPEX (Operational)</Label>
+                                                <Label htmlFor="opex" className="font-normal cursor-pointer">OPEX (Operational)</Label>
                                             </div>
                                             <div className="flex items-center space-x-2">
                                                 <input
@@ -198,10 +224,22 @@ export function RequestWizard() {
 
                             {/* STEP 2 */}
                             {currentStep === 2 && (
-                                <div className="space-y-4">
+                                <div className="space-y-6">
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
-                                            <Label htmlFor="amount">Amount</Label>
+                                            <Label htmlFor="amount" className="flex items-center gap-2">
+                                                Amount
+                                                <TooltipProvider>
+                                                    <Tooltip>
+                                                        <TooltipTrigger asChild>
+                                                            <HelpCircle className="h-4 w-4 text-stone-400 cursor-help" />
+                                                        </TooltipTrigger>
+                                                        <TooltipContent>
+                                                            <p>Total value of the request excluding VAT/Tax.</p>
+                                                        </TooltipContent>
+                                                    </Tooltip>
+                                                </TooltipProvider>
+                                            </Label>
                                             <Input id="amount" type="number" step="0.01" {...register("amount")} />
                                             {errors.amount && <p className="text-sm text-red-500">{errors.amount.message}</p>}
                                         </div>
@@ -217,8 +255,48 @@ export function RequestWizard() {
                                             </select>
                                         </div>
                                     </div>
+
                                     <div className="space-y-2">
-                                        <Label htmlFor="supplier">Supplier Name</Label>
+                                        <Label className="flex items-center gap-2">
+                                            Budget Status
+                                            <TooltipProvider>
+                                                <Tooltip>
+                                                    <TooltipTrigger asChild>
+                                                        <HelpCircle className="h-4 w-4 text-stone-400 cursor-help" />
+                                                    </TooltipTrigger>
+                                                    <TooltipContent>
+                                                        <p>Is this expenditure explicitly included in this year's approved budget?</p>
+                                                    </TooltipContent>
+                                                </Tooltip>
+                                            </TooltipProvider>
+                                        </Label>
+                                        <div className="flex items-center space-x-2 rounded-md border border-stone-200 p-3 bg-white">
+                                            <input
+                                                type="checkbox"
+                                                id="isBudgeted"
+                                                {...register("isBudgeted")}
+                                                className="h-4 w-4 rounded border-stone-300 text-green-600 focus:ring-green-600"
+                                            />
+                                            <Label htmlFor="isBudgeted" className="font-normal cursor-pointer">
+                                                Yes, this request is part of the approved budget
+                                            </Label>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <Label htmlFor="supplier" className="flex items-center gap-2">
+                                            Supplier Name
+                                            <TooltipProvider>
+                                                <Tooltip>
+                                                    <TooltipTrigger asChild>
+                                                        <HelpCircle className="h-4 w-4 text-stone-400 cursor-help" />
+                                                    </TooltipTrigger>
+                                                    <TooltipContent>
+                                                        <p>The vendor or service provider who will fulfill this request.</p>
+                                                    </TooltipContent>
+                                                </Tooltip>
+                                            </TooltipProvider>
+                                        </Label>
                                         <Input id="supplier" placeholder="e.g. Google, AWS, Agency X" {...register("supplier")} />
                                         {errors.supplier && <p className="text-sm text-red-500">{errors.supplier.message}</p>}
                                     </div>
@@ -270,6 +348,15 @@ export function RequestWizard() {
 
                                         <span className="font-semibold text-stone-500">Amount:</span>
                                         <span className="col-span-1 sm:col-span-2">{data.currency} {data.amount}</span>
+
+                                        <span className="font-semibold text-stone-500">Budgeted:</span>
+                                        <span className="col-span-1 sm:col-span-2">
+                                            {data.isBudgeted ? (
+                                                <span className="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">Yes, Budgeted</span>
+                                            ) : (
+                                                <span className="inline-flex items-center rounded-md bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-800 ring-1 ring-inset ring-yellow-600/20">Unbudgeted</span>
+                                            )}
+                                        </span>
 
                                         <span className="font-semibold text-stone-500">Supplier:</span>
                                         <span className="col-span-1 sm:col-span-2">{data.supplier}</span>
