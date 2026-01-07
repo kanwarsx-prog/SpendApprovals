@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { HelpCircle } from "lucide-react"
+import { HelpCircle, Check, ChevronRight, ChevronLeft } from "lucide-react"
 
 // Define validation schema for the wizard
 const formSchema = z.object({
