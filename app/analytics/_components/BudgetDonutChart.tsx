@@ -32,7 +32,7 @@ export function BudgetDonutChart({ data }: BudgetDonutChartProps) {
                     ))}
                 </Pie>
                 <Tooltip
-                    formatter={(value: number) => [`£${value.toLocaleString()}`, "Spend"]}
+                    formatter={(value: any) => [`£${value.toLocaleString()}`, "Spend"]}
                     contentStyle={{ borderRadius: "8px", border: "none", boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}
                 />
                 <Legend verticalAlign="bottom" height={36} iconType="circle" />

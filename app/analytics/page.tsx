@@ -43,6 +43,22 @@ export default async function AnalyticsPage() {
         ? Math.round((requests.filter(r => r.status === 'APPROVED').length / requests.length) * 100)
         : 0
 
+    // NEW: Budget Adherence Calc
+    const budgetRequests = requests.filter(r => (r as any).isBudgeted === true)
+    const unbudgetedRequests = requests.filter(r => !(r as any).isBudgeted)
+
+    const budgetedSpend = budgetRequests.reduce((sum, r) => sum + r.amount, 0)
+    const unbudgetedSpend = unbudgetedRequests.reduce((sum, r) => sum + r.amount, 0)
+    const totalSpendCalculated = budgetedSpend + unbudgetedSpend
+    const budgetAdherenceRate = totalSpendCalculated > 0
+        ? Math.round((budgetedSpend / totalSpendCalculated) * 100)
+        : 100
+
+    const budgetChartData = [
+        { name: "Budgeted", value: budgetedSpend, color: "#22C55E" },
+        { name: "Unbudgeted", value: unbudgetedSpend, color: "#EF4444" }
+    ]
+
     // 3. Aggregate for Category Chart
     const categoryMap = new Map<string, number>()
     requests.forEach(r => {
