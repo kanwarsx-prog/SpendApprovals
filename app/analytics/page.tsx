@@ -3,7 +3,8 @@ import { PrismaClient } from "@prisma/client"
 import { CategoryBarChart } from "./_components/CategoryBarChart"
 import { TrendChart } from "./_components/TrendChart"
 import { ExposureChart } from "./_components/ExposureChart"
-import { ArrowLeft, TrendingUp, PoundSterling, FileText, CheckCircle, Clock } from "lucide-react"
+import { BudgetDonutChart } from "./_components/BudgetDonutChart"
+import { ArrowLeft, TrendingUp, PoundSterling, FileText, CheckCircle, Clock, PieChart } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 
@@ -21,6 +22,7 @@ export default async function AnalyticsPage() {
             status: true,
             createdAt: true,
             expenseType: true,
+            isBudgeted: true,
             approvalSteps: {
                 where: { status: 'PENDING' },
                 orderBy: { order: 'asc' },
@@ -127,12 +129,12 @@ export default async function AnalyticsPage() {
                     </Card>
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Active Requests</CardTitle>
-                            <FileText className="h-4 w-4 text-stone-500" />
+                            <CardTitle className="text-sm font-medium">Budget Adherence</CardTitle>
+                            <PieChart className="h-4 w-4 text-stone-500" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{activeRequests}</div>
-                            <p className="text-xs text-stone-500">Currently pending approval</p>
+                            <div className="text-2xl font-bold">{budgetAdherenceRate}%</div>
+                            <p className="text-xs text-stone-500">Of spend is within budget</p>
                         </CardContent>
                     </Card>
                     <Card>
@@ -158,9 +160,9 @@ export default async function AnalyticsPage() {
                 </div>
 
                 {/* Main Charts Row */}
-                <div className="grid gap-4 md:grid-cols-2">
+                <div className="grid gap-4 md:grid-cols-3">
                     {/* Trend Chart */}
-                    <Card className="col-span-1">
+                    <Card className="col-span-1 md:col-span-2">
                         <CardHeader>
                             <CardTitle>Spend Velocity</CardTitle>
                             <CardDescription>Requested volume over time (split by CAPEX/OPEX)</CardDescription>
@@ -170,7 +172,20 @@ export default async function AnalyticsPage() {
                         </CardContent>
                     </Card>
 
-                    {/* Category Chart */}
+                    {/* Budget Donut Chart */}
+                    <Card className="col-span-1">
+                        <CardHeader>
+                            <CardTitle>Budget Ratio</CardTitle>
+                            <CardDescription>Budgeted vs Unbudgeted Spend</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <BudgetDonutChart data={budgetChartData} />
+                        </CardContent>
+                    </Card>
+                </div>
+
+                {/* Category & Exposure Row */}
+                <div className="grid gap-4 md:grid-cols-2">
                     <Card className="col-span-1">
                         <CardHeader>
                             <CardTitle>Top Spend Categories</CardTitle>
@@ -180,12 +195,8 @@ export default async function AnalyticsPage() {
                             <CategoryBarChart data={categoryData} />
                         </CardContent>
                     </Card>
-                </div>
 
-                {/* Exposure Analysis Section */}
-                <div>
-                    <h2 className="text-xl font-bold text-stone-900 mb-4 mt-4">Approver Exposure Analysis</h2>
-                    <div className="grid gap-4 md:grid-cols-2">
+                    <div className="col-span-1 space-y-4">
                         {/* CAPEX Exposure */}
                         <Card className="border-l-4 border-l-[#C02D76]">
                             <CardHeader className="pb-2">
