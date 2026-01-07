@@ -20,7 +20,8 @@ export default async function RequestPage({ params }: { params: Promise<{ id: st
     if (!request) return <div>Not found</div>
 
     // Check budget status (handling potentially missing field if schema update failed)
-    const isBudgeted = (request as any).isBudgeted ?? true // Default to true if undefined to avoid scaring users on old data
+    // Defaulting to FALSE (Unbudgeted) is safer for compliance. If data is missing, we flag it.
+    const isBudgeted = (request as any).isBudgeted ?? false
 
     // Server Action for Approval
     async function approveAction(formData: FormData) {
