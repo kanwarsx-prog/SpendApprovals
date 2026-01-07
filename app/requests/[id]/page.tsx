@@ -113,7 +113,18 @@ export default async function RequestPage({ params }: { params: Promise<{ id: st
                                 <div className="grid grid-cols-2 gap-6">
                                     <div>
                                         <p className="text-xs font-bold text-stone-400">AMOUNT</p>
-                                        <p className="text-xl font-mono">{request.currency} {request.amount.toLocaleString()}</p>
+                                        <div className="flex items-center gap-2">
+                                            <p className="text-xl font-mono">{request.currency} {request.amount.toLocaleString()}</p>
+                                            {!isBudgeted ? (
+                                                <span className="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800">
+                                                    Unbudgeted
+                                                </span>
+                                            ) : (
+                                                <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
+                                                    Budgeted
+                                                </span>
+                                            )}
+                                        </div>
                                     </div>
                                     <div>
                                         <p className="text-xs font-bold text-stone-400">SUPPLIER</p>
