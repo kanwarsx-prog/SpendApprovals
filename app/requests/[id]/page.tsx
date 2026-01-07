@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import Link from "next/link"
-import { ChevronLeft, Check, Download, FileText } from "lucide-react"
+import { ChevronLeft, Check, Download, FileText, AlertTriangle } from "lucide-react"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
 import { Header } from "@/components/header"
@@ -18,6 +18,9 @@ export default async function RequestPage({ params }: { params: Promise<{ id: st
     })
 
     if (!request) return <div>Not found</div>
+
+    // Check budget status (handling potentially missing field if schema update failed)
+    const isBudgeted = (request as any).isBudgeted ?? true // Default to true if undefined to avoid scaring users on old data
 
     // Server Action for Approval
     async function approveAction(formData: FormData) {
