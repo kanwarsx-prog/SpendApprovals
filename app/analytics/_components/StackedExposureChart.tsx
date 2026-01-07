@@ -26,7 +26,7 @@ export function StackedExposureChart({ data }: StackedExposureChartProps) {
                     <Tooltip
                         cursor={{ fill: '#f5f5f4' }}
                         contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                        formatter={(value: any, name: string) => [
+                        formatter={(value: any, name: any) => [
                             `£${Number(value).toLocaleString()}`,
                             name === 'capex' ? 'CAPEX Pending' : 'OPEX Pending'
                         ]}
