@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { PrismaClient } from "@prisma/client"
 import { CategoryBarChart } from "./_components/CategoryBarChart"
 import { TrendChart } from "./_components/TrendChart"
-import { ExposureChart } from "./_components/ExposureChart"
+import { StackedExposureChart } from "./_components/StackedExposureChart"
 import { BudgetDonutChart } from "./_components/BudgetDonutChart"
 import { ArrowLeft, TrendingUp, PoundSterling, FileText, CheckCircle, Clock, PieChart } from "lucide-react"
 import Link from "next/link"
@@ -94,25 +94,24 @@ export default async function AnalyticsPage() {
     const trendData = Array.from(trendMap.entries()).map(([date, values]) => ({ date, ...values }))
 
     // 5. Aggregate for Exposure Charts (Pending only)
-    const capexExposureMap = new Map<string, number>()
-    const opexExposureMap = new Map<string, number>()
+    // 5. Aggregate for Stacked Exposure Chart (Pending only)
+    const exposureMap = new Map<string, { role: string, capex: number, opex: number }>()
 
     requests
         .filter(r => ['SUBMITTED', 'IN_APPROVAL'].includes(r.status) && r.approvalSteps.length > 0)
         .forEach(r => {
             const currentRole = r.approvalSteps[0].roleName
-            const map = r.expenseType === 'CAPEX' ? capexExposureMap : opexExposureMap
-            const currentVal = map.get(currentRole) || 0
-            map.set(currentRole, currentVal + r.amount)
+            if (!exposureMap.has(currentRole)) {
+                exposureMap.set(currentRole, { role: currentRole, capex: 0, opex: 0 })
+            }
+            const current = exposureMap.get(currentRole)!
+
+            if (r.expenseType === 'CAPEX') current.capex += r.amount
+            if (r.expenseType === 'OPEX') current.opex += r.amount
         })
 
-    const toChartData = (map: Map<string, number>) =>
-        Array.from(map.entries())
-            .map(([name, value]) => ({ name, value }))
-            .sort((a, b) => b.value - a.value)
-
-    const capexExposureData = toChartData(capexExposureMap)
-    const opexExposureData = toChartData(opexExposureMap)
+    const exposureData = Array.from(exposureMap.values())
+        .sort((a, b) => (b.capex + b.opex) - (a.capex + a.opex))
 
     return (
         <main className="min-h-screen bg-stone-50 p-8">
@@ -212,36 +211,18 @@ export default async function AnalyticsPage() {
                         </CardContent>
                     </Card>
 
-                    <div className="col-span-1 space-y-4">
-                        {/* CAPEX Exposure */}
-                        <Card className="border-l-4 border-l-[#C02D76]">
-                            <CardHeader className="pb-2">
-                                <CardTitle className="text-base">CAPEX Pending Approvals</CardTitle>
-                                <CardDescription>Pending CAPEX value by current approver</CardDescription>
+                    <div className="col-span-1">
+                        <Card className="h-full">
+                            <CardHeader>
+                                <CardTitle>Pending Approvals Exposure</CardTitle>
+                                <CardDescription>Combined CAPEX & OPEX Bottlenecks</CardDescription>
                             </CardHeader>
                             <CardContent>
-                                {capexExposureData.length > 0 ? (
-                                    <ExposureChart data={capexExposureData} color="#C02D76" />
+                                {exposureData.length > 0 ? (
+                                    <StackedExposureChart data={exposureData} />
                                 ) : (
-                                    <div className="h-[200px] flex items-center justify-center text-stone-400 text-sm">
-                                        No pending CAPEX requests
-                                    </div>
-                                )}
-                            </CardContent>
-                        </Card>
-
-                        {/* OPEX Exposure */}
-                        <Card className="border-l-4 border-l-[#22C55E]">
-                            <CardHeader className="pb-2">
-                                <CardTitle className="text-base">OPEX Pending Approvals</CardTitle>
-                                <CardDescription>Pending OPEX value by current approver</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                {opexExposureData.length > 0 ? (
-                                    <ExposureChart data={opexExposureData} color="#22C55E" />
-                                ) : (
-                                    <div className="h-[200px] flex items-center justify-center text-stone-400 text-sm">
-                                        No pending OPEX requests
+                                    <div className="h-[300px] flex items-center justify-center text-stone-400">
+                                        No pending approvals
                                     </div>
                                 )}
                             </CardContent>
