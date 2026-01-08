@@ -17,7 +17,7 @@ export function Header() {
                 </Link>
                 <div>
                     <h1 className="text-lg sm:text-2xl font-bold tracking-tight text-stone-900 leading-tight">Spend Approvals</h1>
-                    <p className="text-[10px] sm:text-xs text-stone-500 font-medium">COLOMBO WEST INTERNATIONAL TERMINAL</p>
+                    <p className="text-[10px] sm:text-xs text-stone-500 font-medium">EVERYDAY SYSTEMS (PRIVATE) LIMITED</p>
                 </div>
             </div>
             <nav className="flex items-center gap-4">
