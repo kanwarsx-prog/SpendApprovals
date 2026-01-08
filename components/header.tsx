@@ -13,7 +13,7 @@ export function Header() {
         <header className="flex items-center justify-between mb-8">
             <div className="flex items-center gap-4">
                 <Link href="/">
-                    <img src="/cwit-logo.svg" alt="CWIT Logo" className="h-10 w-auto sm:h-12 cursor-pointer" />
+                    <img src="/everyday-systems-logo.png" alt="Everyday Systems Logo" className="h-10 w-auto sm:h-12 cursor-pointer" />
                 </Link>
                 <div>
                     <h1 className="text-lg sm:text-2xl font-bold tracking-tight text-stone-900 leading-tight">Spend Approvals</h1>

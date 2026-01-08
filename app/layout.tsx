@@ -9,7 +9,7 @@ const barlow = Barlow({
 });
 
 export const metadata: Metadata = {
-  title: "CWIT - Spend Approvals",
+  title: "Everyday Systems - Spend Approvals",
   description: "Spend Approval Application",
 };
 

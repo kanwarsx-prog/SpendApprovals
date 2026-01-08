@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
         alignItems: 'flex-start',
         marginBottom: 30,
         paddingBottom: 20,
-        borderBottom: '2px solid #C02D76', // CWIT Magenta
+        borderBottom: '2px solid #C02D76', // Primary Accent
     },
     headerRight: {
         alignItems: 'flex-end',
@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 24,
         fontWeight: 'bold',
-        color: '#34394D', // CWIT Navy
+        color: '#34394D', // Primary Navy
         textTransform: 'uppercase',
         letterSpacing: 1,
     },
@@ -149,7 +149,7 @@ export const ApprovalDocument = ({ data }: ApprovalPdfProps) => {
     const footerText = `Request ID: ${data.id} • Generated on ${new Date().toLocaleDateString()}`;
     // In Vercel serverless environment, files in public are kept in root or specific paths.
     // Ideally we pass the buffer or base64, but local filesystem read works if path is correct.
-    const logoPath = path.resolve(process.cwd(), 'public/cwit-logo.svg');
+    const logoPath = path.resolve(process.cwd(), 'public/everyday-systems-logo.png');
 
     return (
         <Document>
@@ -261,7 +261,7 @@ export const ApprovalDocument = ({ data }: ApprovalPdfProps) => {
                 {/* Footer */}
                 <View style={styles.footer}>
                     <Text style={{ fontSize: 10, fontWeight: 'bold', color: '#34394D', marginBottom: 4 }}>
-                        Colombo West International Terminal (Private) Limited
+                        Everyday Systems (Private) Limited
                     </Text>
                     <Text style={styles.footerText}>
                         {footerText}
